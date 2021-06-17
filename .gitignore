@@ -1,0 +1,11 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+
+# IPython Notebook
+.ipynb_checkpoints
+
+/.vscode
+/env
+
+/Lab 3 Image classification using convolutional neural network/dataset/augmentations/*/*
