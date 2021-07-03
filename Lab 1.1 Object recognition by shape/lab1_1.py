@@ -1,4 +1,4 @@
-"""lab1.1 in Digital Image Processing."""
+"""Lab1.1 in Digital Image Processing: "Object recognition by shape"."""
 
 import math
 import os
@@ -7,8 +7,8 @@ import numpy as np
 from skimage import io, filters
 
 
-TRAIN_PATH = os.path.join(os.path.dirname(__file__), 'dataset\\train')
-TEST_PATH = os.path.join(os.path.dirname(__file__), 'dataset\\test')
+TRAIN_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'train')
+TEST_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'test')
 FRUIT1_NAME = os.listdir(TRAIN_PATH)[0] # Ginger Root
 FRUIT2_NAME = os.listdir(TRAIN_PATH)[1] # Physalis
 EPSILON = 1e-8
