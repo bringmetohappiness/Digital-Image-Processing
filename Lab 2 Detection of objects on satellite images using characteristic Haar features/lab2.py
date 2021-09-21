@@ -12,9 +12,9 @@ import matplotlib.pyplot as plt
 from matplotlib import patches
 
 
-TRUCKS_PATH = os.path.join(os.path.dirname(__file__), 'dataset/train/trucks')
-NONTRUCKS_PATH = os.path.join(os.path.dirname(__file__), 'dataset/train/nontrucks')
-TEST_PATH = os.path.join(os.path.dirname(__file__), 'dataset/test')
+TRUCKS_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'train', 'trucks')
+NONTRUCKS_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'train', 'nontrucks')
+TEST_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'test')
 DETECTION_WINDOW_WIDTH = 150
 DETECTION_WINDOW_HEIGHT = 150
 RESIZE_WIDTH = 20

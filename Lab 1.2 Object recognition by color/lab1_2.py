@@ -7,8 +7,8 @@ from matplotlib import patches
 import numpy as np
 
 
-TRAIN_PATH = os.path.join(os.path.dirname(__file__), 'dataset/train')
-TEST_PATH = os.path.join(os.path.dirname(__file__), 'dataset/test')
+TRAIN_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'train')
+TEST_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'test')
 CHANNEL1 = 0
 CHANNEL2 = 1
 CHANNEL3 = 2
