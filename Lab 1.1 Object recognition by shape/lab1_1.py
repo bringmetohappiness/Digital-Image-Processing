@@ -1,4 +1,38 @@
-"""Lab1.1 in Digital Image Processing: "Object recognition by shape"."""
+"""Лаб1.1 по Цифровой Обработке Изображений: "Распознавание объекта по форме".
+
+1. Получить обучающую и тестовую выборки изображений двух овощей/фруктов у преподавателя в
+соответствии с вариантом.
+2. На языке Python (3.х) создать проект и подключить библиотеку scikit-image.
+3. Разработать программу по загрузке цифрового изображения.
+4. Подключить функцию обращения к пикселем цифрового изображения.
+5. Запрограммировать формулу перевода цифрового изображения в полутоновой формат.
+6. Провести информационный поиск в Интернете по способам применения оператора выделения границ в
+соответствии с вариантом. Разобраться, включить описание в отчёт (теор. часть).
+7. Запрограммировать оператор выделения границ в соответствии с вариантом. При необходимости
+добавить пороговое преобразование в бинарное изображение.
+8. Провести информационный поиск в Интернете и запрограммировать работу программы распознавания
+фруктов в зависимости от геометрической формы (после работы оператора выделения границ).
+9. Организовать и провести эксперимент на тестовой выборке. Вычислить ошибку первого и второго рода.
+Построить графики.
+10. Дать комментарий каждой строчке кода!
+11. Подготовить и прислать отчет (титульный лист, задание, теоретическая часть, диаграмма структуры
+программы, принтскрины интерфейса и основных шагов работы программы, заключение и выводы, листинг
+программы с комментариями, список использованной литературы).
+
+Фильтры (операторы):
+- Кэнни (Canny):
+https://scikit-image.org/docs/dev/api/skimage.feature.html#skimage.feature.canny
+- Превитт (Prewitt):
+https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.prewitt
+- Робертс (Roberts):
+https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.roberts
+- Собель (Sobel):
+https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.sobel
+Щарра (Scharr):
+https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.scharr
+
+Алгоритмы выделения контуров изображений: https://habr.com/ru/post/114452/
+"""
 
 import math
 import os
@@ -9,8 +43,8 @@ from skimage import io, filters
 
 TRAIN_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'train')
 TEST_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'test')
-FRUIT1_NAME = os.listdir(TRAIN_PATH)[0] # Ginger Root
-FRUIT2_NAME = os.listdir(TRAIN_PATH)[1] # Physalis
+FRUIT1_NAME = os.listdir(TRAIN_PATH)[0]  # Ginger Root
+FRUIT2_NAME = os.listdir(TRAIN_PATH)[1]  # Physalis
 EPSILON = 1e-8
 BLACK_PIXEL = 0
 WHITE_PIXEL = 255
@@ -60,7 +94,6 @@ def get_predict(path, bw_threshold, variance_threshold, radius=0):
     is not estimated;
     variance_threshold - variance threshold value for fruit prediction.
     """
-    predict = None
     image = io.imread(path, as_gray=True)
     image = filters.roberts(image)
     image = get_bw_image(image, bw_threshold)
@@ -116,7 +149,8 @@ def get_tp_fn_tn_fp(path, threshold_get_bin, radius, variance_threshold):
 
 def get_accuracy(true_positives, true_negatives, false_positives, false_negatives):
     """Returns accuracy."""
-    accuracy = (true_positives + true_negatives) / (true_positives + true_negatives + false_positives + false_negatives)
+    accuracy = (true_positives + true_negatives) / (true_positives + true_negatives +
+                                                    false_positives + false_negatives)
     return accuracy
 
 
@@ -159,11 +193,11 @@ def train(path):
     print('=' * line_length)
 
     best_accuracy = None
-    threshold_get_bin = 0.1  # Fine tunning
+    threshold_get_bin = 0.1  # Fine tuning
     while best_accuracy != 1 and abs(threshold_get_bin - 0.6) > EPSILON:
-        radius = 10 # Fine tunning
+        radius = 10  # Fine tuning
         while best_accuracy != 1 and radius != 60:
-            variance_threshold = 10 # Fine tunning
+            variance_threshold = 10  # Fine tuning
             while best_accuracy != 1 and variance_threshold != 100:
                 true_positives, false_negatives, true_negatives, false_positives = get_tp_fn_tn_fp(
                     path, threshold_get_bin,
@@ -182,30 +216,23 @@ def train(path):
                     best_variance_threshold = variance_threshold
                 if abs(best_accuracy - 1.0) < EPSILON:
                     best_accuracy = 1
-                print('|        {:3.2}        |'
-                      '   {:2}   |'
-                      '         {:2}         |'
-                      '|      {:4.2%}      |'
-                      '     {:4.2%}    |'.format(
-                    threshold_get_bin, radius,
-                    variance_threshold, current_accuracy,
-                    best_accuracy
-                    )
-                )
+                print(f'|        {threshold_get_bin:3.2}        |'
+                      f'   {radius:2}   |'
+                      f'         {variance_threshold:2}         |'
+                      f'|      {current_accuracy:4.2%}      |'
+                      f'     {best_accuracy:4.2%}    |'
+                      )
                 variance_threshold += 10
             print('-' * line_length)
             radius += 10
         print('-' * line_length)
         threshold_get_bin += 0.1
 
-    print('best threshold_get_bin = {}'
-          'best radius = {}'
-          'best variance_threshold = {}'.format(
-        best_threshold_get_bin,
-        best_radius,
-        best_variance_threshold
+    print(
+        f'best threshold_get_bin = {best_threshold_get_bin}'
+        f'best radius = {best_radius}'
+        f'best variance_threshold = {best_variance_threshold}'
         )
-    )
     return best_threshold_get_bin, best_radius, best_variance_threshold
 
 
@@ -222,20 +249,14 @@ def test(best_threshold_get_bin, best_radius, best_variance_threshold):
     negative_predictive_value = get_negative_predictive_value(true_negatives, false_negatives)
     sensitivity = get_sensitivity(true_positives, false_negatives)
     specificity = get_specificity(true_negatives, false_positives)
-    print('accuracy = {:4.2%}, precision = {:4.2%}'
-          'negative predictive value = {:4.2%}'
-          'sensitivity = {:4.2%}'
-          'specificity = {:4.2%}'.format(
-        accuracy,
-        precision,
-        negative_predictive_value,
-        sensitivity,
-        specificity)
-    )
+    print(f'accuracy = {accuracy:4.2%}, precision = {precision:4.2%}'
+          f'negative predictive value = {negative_predictive_value:4.2%}'
+          f'sensitivity = {sensitivity:4.2%}'
+          f'specificity = {specificity:4.2%}'
+          )
 
 
 def main():
-    """Entry Point."""
     best_threshold_get_bin, best_radius, best_variance_threshold = train(TRAIN_PATH)
     test(best_threshold_get_bin, best_radius, best_variance_threshold)
 

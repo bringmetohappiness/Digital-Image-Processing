@@ -1,4 +1,21 @@
-"""Lab1.2 in Digital Image Processing"""
+"""Лаб1.2 по Цифровой Обработке Изображений: "Распознавание объекта по форме".
+
+1. Подготовить выборку 10 (или более) цветных цифровых изображений блюд.
+2. На языке Python (3.х) создать проект и подключить библиотеку scikit-image.
+3. Из Лаб1.1 взять модуль загрузки цветного цифрового изображения и модуль обработки пикселей.
+4. Запрограммировать формулу перевода цветного цифрового изображения в цветовое пространство в
+соответствии с вариантом.
+5. Создать классификацию блюд из цифровых изображений.
+6. Для каждого блюда определить цветовые характеристики. Задать распределение значений каждого
+цвета.
+7. Провести эксперимент по распознаванию блюд с визуализацией результатов.
+8. Дать комментарий каждой строчке кода!
+9. Прислать программу преподавателю.
+10. Построить график ошибок первого и второго рода по результатам распознавания.
+11. Подготовить и прислать отчёт (титульный лист, задание, теоретическая часть, диаграмма структуры
+программы, принтскрины интерфейса и основных шагов работы программы, заключение и выводы, листинг
+программы с комментариями, список использованной литературы).
+"""
 
 import os
 import cv2
@@ -7,8 +24,8 @@ from matplotlib import patches
 import numpy as np
 
 
-TRAIN_PATH = os.path.join(os.path.dirname(__file__), 'dataset/train')
-TEST_PATH = os.path.join(os.path.dirname(__file__), 'dataset/test')
+TRAIN_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'train')
+TEST_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'test')
 CHANNEL1 = 0
 CHANNEL2 = 1
 CHANNEL3 = 2
@@ -19,9 +36,9 @@ MASK = None
 H_RANGE = [0, H_MAX]
 L_RANGE = [0, L_MAX]
 S_RANGE = [0, S_MAX]
-# Fine tunning by hands!
+# Fine tuning by hands!
 TRAIN_SETTINGS = dict(dp=2, minDist=350, param1=650, param2=100, minRadius=175, maxRadius=225)
-# Fine tunning by hands!
+# Fine tuning by hands!
 TEST_SETTINGS = dict(dp=2, minDist=300, param1=500, param2=100, minRadius=130, maxRadius=140)
 GREEN_COLOR = (0, 1.0, 0)
 WHITE_COLOR = (1.0, 1.0, 1.0)
@@ -37,7 +54,7 @@ def circles_check(path):
     for filename in filenames:
         image = plt.imread(os.path.join(path, filename))
         grayscale_image = cv2.imread(os.path.join(path, filename), cv2.IMREAD_GRAYSCALE)
-        # Fine tunning by hands!
+        # Fine tuning by hands!
         circles = cv2.HoughCircles(
             grayscale_image,
             cv2.HOUGH_GRADIENT,
@@ -188,7 +205,6 @@ def test(path, train_results):
 
 
 def main():
-    """Entry Point."""
     train_results = train(TRAIN_PATH)
     test(TEST_PATH, train_results)
 

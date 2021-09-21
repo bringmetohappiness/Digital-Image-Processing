@@ -3,15 +3,11 @@
 import os
 from skimage import color
 import matplotlib.pyplot as plt
-
-from lab1_1 import TRAIN_PATH
-from lab1_1 import FRUIT1_NAME
-from lab1_1 import FRUIT2_NAME
-from lab1_1 import get_bw_image
+import lab1_1
 
 
-GINGER_ROOT_TRAIN = os.path.join(TRAIN_PATH, FRUIT1_NAME)
-PHYSALIS_TRAIN = os.path.join(TRAIN_PATH, FRUIT2_NAME)
+GINGER_ROOT_TRAIN = os.path.join(lab1_1.TRAIN_PATH, lab1_1.FRUIT1_NAME)
+PHYSALIS_TRAIN = os.path.join(lab1_1.TRAIN_PATH, lab1_1.FRUIT2_NAME)
 
 
 def show_fruit(path):
@@ -24,7 +20,7 @@ def show_fruit(path):
         ax.imshow(image)
         ax.set_axis_off()
     fruit_name = os.path.basename(path)
-    fig.suptitle('Some of {}'.format(fruit_name))
+    fig.suptitle(f'Some of {fruit_name}')
     plt.show()
 
 
@@ -36,15 +32,14 @@ def get_first_image(path):
 
 
 def show_processing(image):
-    """
-    Shows Image Processing.
+    """Shows Image Processing.
 
     The first figure is an original image.
     The second figure is grayscaled image.
     The third figure is blackwhited image.
     """
     gray_scale_image = color.rgb2gray(image)
-    black_white_image = get_bw_image(gray_scale_image, 0.4)
+    black_white_image = lab1_1.get_bw_image(gray_scale_image, 0.4)
 
     fig, axes = plt.subplots(1, 3, figsize=(9, 3))
     axes[0].imshow(image)
@@ -58,7 +53,6 @@ def show_processing(image):
 
 
 def main():
-    """Main function."""
     show_fruit(GINGER_ROOT_TRAIN)
     show_fruit(PHYSALIS_TRAIN)
 

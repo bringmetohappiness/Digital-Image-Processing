@@ -6,6 +6,6 @@ __pycache__/
 .ipynb_checkpoints
 
 /.vscode
-/env
+/venv
 
 /Lab 3 Image classification using convolutional neural network/dataset/augmentations/*/*
