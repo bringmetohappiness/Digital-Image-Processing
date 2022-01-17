@@ -3,7 +3,8 @@ import math
 import os
 
 import numpy as np
-from skimage import io, filters
+from skimage import io
+from skimage import filters
 
 
 TRAIN_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'train')

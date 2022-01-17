@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 import os
+
+from matplotlib import patches
+from matplotlib import pyplot as plt
 import numpy as np
 from skimage import io
-from skimage.transform import integral_image
-from skimage.transform import resize
-from skimage.feature import haar_like_feature
-from skimage.feature import haar_like_feature_coord
-from sklearn.ensemble import RandomForestClassifier
-import matplotlib.pyplot as plt
-from matplotlib import patches
+from skimage import transform
+from skimage import feature
+from sklearn import ensemble
 
 
 TRUCKS_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'train', 'trucks')
@@ -33,8 +32,8 @@ def read_images(path):
 
 def extract_feature_values(img, feature_coords=None, feature_types=None):
     """Extract the haar feature for the current image."""
-    ii = integral_image(img)
-    values = haar_like_feature(
+    ii = transform.integral_image(img)
+    values = feature.haar_like_feature(
         ii, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT,
         feature_type=feature_types,
         feature_coord=feature_coords
@@ -57,7 +56,7 @@ def get_best_n(classifier, points, number):
     best_n_indexies = sorted_indexies[:number]
 
     # получаем список со значениями всех признаков и список с типами признаков
-    feature_coords, feature_types = haar_like_feature_coord(RESIZE_WIDTH, RESIZE_HEIGHT)
+    feature_coords, feature_types = feature.haar_like_feature_coord(RESIZE_WIDTH, RESIZE_HEIGHT)
 
     new_points = []
     for point in points:
@@ -89,7 +88,7 @@ def train(object_path, nonobject_path):
     labels = np.array(['truck'] * len(trucks) + ['nontruck'] * len(nontrucks))
 
     # классификатор, обученный на всех 78 тысячах признаках
-    classifier = RandomForestClassifier(
+    classifier = ensemble.RandomForestClassifier(
         n_estimators=1000,
         max_depth=None,
         max_features=100,
@@ -100,7 +99,7 @@ def train(object_path, nonobject_path):
 
     new_points, best_feature_coords, best_feature_types = get_best_n(classifier, points, NUMBER_TOP_FEATURES)
 
-    new_classifier = RandomForestClassifier(
+    new_classifier = ensemble.RandomForestClassifier(
         n_estimators=1000,
         max_depth=None,
         max_features=100,
@@ -126,7 +125,7 @@ def test(classifier, test_path, best_feature_coords, best_feature_types):
                 # вырезаем часть
                 crop = test_images[0][h:h + DETECTION_WINDOW_HEIGHT, w:w + DETECTION_WINDOW_WIDTH]
                 # ресайзим до 20х20
-                crop = resize(crop, (RESIZE_WIDTH, RESIZE_HEIGHT), anti_aliasing=True)
+                crop = transform.resize(crop, (RESIZE_WIDTH, RESIZE_HEIGHT), anti_aliasing=True)
                 # считаем для обрезка значение признаков
                 feature_values = extract_feature_values(
                     crop,

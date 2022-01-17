@@ -1,8 +1,9 @@
 """Report for lab1 in Digital Image Processing."""
-
 import os
-from skimage import color
+
 import matplotlib.pyplot as plt
+from skimage import color
+
 import lab1_1
 
 

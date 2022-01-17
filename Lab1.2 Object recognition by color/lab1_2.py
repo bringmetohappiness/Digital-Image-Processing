@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import os
+
 import cv2
-from matplotlib import pyplot as plt
 from matplotlib import patches
+from matplotlib import pyplot as plt
 import numpy as np
 
 
