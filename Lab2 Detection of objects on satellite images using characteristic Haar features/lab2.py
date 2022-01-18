@@ -9,7 +9,6 @@ from skimage import transform
 from skimage import feature
 from sklearn import ensemble
 
-
 TRUCKS_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'train', 'trucks')
 NONTRUCKS_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'train', 'nontrucks')
 TEST_PATH = os.path.join(os.path.dirname(__file__), 'dataset', 'test')
@@ -21,7 +20,7 @@ NUMBER_TOP_FEATURES = 100
 
 
 def read_images(path):
-    """Read images from directory to list."""
+    """Читает изображения из директории в список."""
     images = []
     file_names = os.listdir(path)
     for file_name in file_names:
@@ -31,29 +30,39 @@ def read_images(path):
 
 
 def extract_feature_values(img, feature_coords=None, feature_types=None):
-    """Extract the haar feature for the current image."""
+    """Извлекает значения признаков Хаара для данного изображения."""
     ii = transform.integral_image(img)
     values = feature.haar_like_feature(
         ii, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT,
         feature_type=feature_types,
-        feature_coord=feature_coords
-    )
+        feature_coord=feature_coords)
     return values
 
 
 def get_points(images):
-    """Возвращает массив точек, в которых содержаться все возможные признаки."""
+    """Возвращает список точек данных, в которых содержаться все возможные признаки."""
     points = []
     for image in images:
         points.append(extract_feature_values(image))
-    points = np.array(points)  # массив точек данных со всеми признаками
+    points = np.array(points)
     return points
 
 
-def get_best_n(classifier, points, number):
-    """."""
+def get_best_n(classifier, points, n):
+    """Возвращает n наиболее важных для классификатора признаков.
+
+    Args:
+        classifier: классификатор.
+        points: точки данных.
+        n: количество выбираемых значимых признаков.
+
+    Returns:
+        new_points: новые точки данных, содержащие только выбранные признаки.
+        best_feature_coords: координаты лучших признаков.
+        best_feature_types: типы лучших признаков.
+    """
     sorted_indexies = np.argsort(classifier.feature_importances_)[::-1]
-    best_n_indexies = sorted_indexies[:number]
+    best_n_indexies = sorted_indexies[:n]
 
     # получаем список со значениями всех признаков и список с типами признаков
     feature_coords, feature_types = feature.haar_like_feature_coord(RESIZE_WIDTH, RESIZE_HEIGHT)
@@ -78,10 +87,20 @@ def get_best_n(classifier, points, number):
     return new_points, best_feature_coords, best_feature_types
 
 
-def train(object_path, nonobject_path):
-    """."""
-    trucks = read_images(object_path)
-    nontrucks = read_images(nonobject_path)
+def train(target_path, nontarget_path):
+    """Обучает классификатор.
+
+    Args:
+        target_path: путь, по которому лежит датасет с целевым объектом поиска.
+        nontarget_path: путь, по которому лежит датасет с фоном.
+
+    Returns:
+        new_classifier: классификатор, обученный на лучших признаках.
+        best_feature_coords: координаты лучших признаков.
+        best_feature_types: типы лучших признаков.
+    """
+    trucks = read_images(target_path)
+    nontrucks = read_images(nontarget_path)
     images = trucks + nontrucks
 
     points = get_points(images)
@@ -89,29 +108,28 @@ def train(object_path, nonobject_path):
 
     # классификатор, обученный на всех 78 тысячах признаках
     classifier = ensemble.RandomForestClassifier(
-        n_estimators=1000,
-        max_depth=None,
-        max_features=100,
-        n_jobs=-1,
-        random_state=0
-    )
+        n_estimators=1000, max_depth=None, max_features=100, n_jobs=-1, random_state=0)
     classifier.fit(points, labels)
 
-    new_points, best_feature_coords, best_feature_types = get_best_n(classifier, points, NUMBER_TOP_FEATURES)
+    new_points, best_feature_coords, best_feature_types = get_best_n(
+        classifier, points, NUMBER_TOP_FEATURES)
 
     new_classifier = ensemble.RandomForestClassifier(
-        n_estimators=1000,
-        max_depth=None,
-        max_features=100,
-        n_jobs=-1,
-        random_state=0
-    )
+        n_estimators=1000, max_depth=None, max_features=100, n_jobs=-1, random_state=0)
     new_classifier.fit(new_points, labels)
+
     return new_classifier, best_feature_coords, best_feature_types
 
 
 def test(classifier, test_path, best_feature_coords, best_feature_types):
-    """."""
+    """Тестирует классификатор на обучающей выборке.
+
+    Args:
+        classifier: классификатор.
+        test_path: путь, по которому лежит обучающая выборка.
+        best_feature_coords: координаты лучших признаков.
+        best_feature_types: типы лучших признаков.
+    """
     test_images = read_images(test_path)
     _, axes = plt.subplots(1, len(test_images))
     axes = axes.flatten()
@@ -128,18 +146,11 @@ def test(classifier, test_path, best_feature_coords, best_feature_types):
                 crop = transform.resize(crop, (RESIZE_WIDTH, RESIZE_HEIGHT), anti_aliasing=True)
                 # считаем для обрезка значение признаков
                 feature_values = extract_feature_values(
-                    crop,
-                    best_feature_coords,
-                    best_feature_types
-                )
+                    crop, best_feature_coords, best_feature_types)
                 predict = classifier.predict([feature_values])  # получаем предсказание
                 if predict == 'truck':
                     draw_rectangle = patches.Rectangle(
-                        (w, h),
-                        DETECTION_WINDOW_WIDTH,
-                        DETECTION_WINDOW_HEIGHT,
-                        fill=False
-                    )
+                        (w, h), DETECTION_WINDOW_WIDTH, DETECTION_WINDOW_HEIGHT, fill=False)
                     ax.add_patch(draw_rectangle)
     plt.show()
 
