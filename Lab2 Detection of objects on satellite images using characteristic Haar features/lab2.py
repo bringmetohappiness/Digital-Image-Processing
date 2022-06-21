@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import os
 
 from matplotlib import patches
@@ -35,7 +34,8 @@ def extract_feature_values(img, feature_coords=None, feature_types=None):
     values = feature.haar_like_feature(
         ii, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT,
         feature_type=feature_types,
-        feature_coord=feature_coords)
+        feature_coord=feature_coords,
+    )
     return values
 
 
@@ -57,9 +57,10 @@ def get_best_n(classifier, points, n):
         n: количество выбираемых значимых признаков.
 
     Returns:
-        new_points: новые точки данных, содержащие только выбранные признаки.
-        best_feature_coords: координаты лучших признаков.
-        best_feature_types: типы лучших признаков.
+        Кортеж `(new_points, best_feature_coords, best_feature_types)`.
+          new_points: новые точки данных, содержащие только выбранные признаки.
+          best_feature_coords: координаты лучших признаков.
+          best_feature_types: типы лучших признаков.
     """
     sorted_indexies = np.argsort(classifier.feature_importances_)[::-1]
     best_n_indexies = sorted_indexies[:n]
@@ -95,9 +96,10 @@ def train(target_path, nontarget_path):
         nontarget_path: путь, по которому лежит датасет с фоном.
 
     Returns:
-        new_classifier: классификатор, обученный на лучших признаках.
-        best_feature_coords: координаты лучших признаков.
-        best_feature_types: типы лучших признаков.
+        Кортеж `(new_classifier, best_feature_coords, best_feature_types)`.
+          new_classifier: классификатор, обученный на лучших признаках.
+          best_feature_coords: координаты лучших признаков.
+          best_feature_types: типы лучших признаков.
     """
     trucks = read_images(target_path)
     nontrucks = read_images(nontarget_path)
@@ -108,14 +110,17 @@ def train(target_path, nontarget_path):
 
     # классификатор, обученный на всех 78 тысячах признаках
     classifier = ensemble.RandomForestClassifier(
-        n_estimators=1000, max_depth=None, max_features=100, n_jobs=-1, random_state=0)
+        n_estimators=1000, max_depth=None, max_features=100, n_jobs=-1, random_state=0,
+    )
     classifier.fit(points, labels)
 
     new_points, best_feature_coords, best_feature_types = get_best_n(
-        classifier, points, NUMBER_TOP_FEATURES)
+        classifier, points, NUMBER_TOP_FEATURES,
+    )
 
     new_classifier = ensemble.RandomForestClassifier(
-        n_estimators=1000, max_depth=None, max_features=100, n_jobs=-1, random_state=0)
+        n_estimators=1000, max_depth=None, max_features=100, n_jobs=-1, random_state=0,
+    )
     new_classifier.fit(new_points, labels)
 
     return new_classifier, best_feature_coords, best_feature_types
@@ -146,11 +151,13 @@ def test(classifier, test_path, best_feature_coords, best_feature_types):
                 crop = transform.resize(crop, (RESIZE_WIDTH, RESIZE_HEIGHT), anti_aliasing=True)
                 # считаем для обрезка значение признаков
                 feature_values = extract_feature_values(
-                    crop, best_feature_coords, best_feature_types)
+                    crop, best_feature_coords, best_feature_types,
+                )
                 predict = classifier.predict([feature_values])  # получаем предсказание
                 if predict == 'truck':
                     draw_rectangle = patches.Rectangle(
-                        (w, h), DETECTION_WINDOW_WIDTH, DETECTION_WINDOW_HEIGHT, fill=False)
+                        (w, h), DETECTION_WINDOW_WIDTH, DETECTION_WINDOW_HEIGHT, fill=False,
+                    )
                     ax.add_patch(draw_rectangle)
     plt.show()
 

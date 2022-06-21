@@ -13,6 +13,14 @@ _CENTER = 49.5
 
 
 class FruitClassifier:
+    def __init__(self):
+        self.fruit1_name = None
+        self.fruit2_name = None
+
+        self.bw_threshold = None
+        self.radius = None
+        self.variance_threshold = None
+
     def train(self, path, bw_param, radius_param, variance_param):
         """Перебором находит лучшие параметры для классификации фруктов, используя обучающий набор.
 
@@ -21,16 +29,14 @@ class FruitClassifier:
             bw_param: параметры перебора границы перевода изображения в чёрно-белый формат.
             radius_param: параметры перебора радиуса, в котором не будут учитываться точки.
             variance_param: параметры перебора границы дисперсии при предсказании.
-
-        Returns:
-            best_bw_threshold: лучший порог яркости для перевода в бинарное изображение.
-            best_radius: лучший радиус для подсчёта расстояний.
-            best_variance_threshold: лучший порог дисперсии для предсказания фрукта.
         """
         self.fruit1_name = os.listdir(path)[0]  # Ginger Root
         self.fruit2_name = os.listdir(path)[1]  # Physalis
 
         best_accuracy = 0
+        best_bw_threshold = None
+        best_radius = None
+        best_variance_threshold = None
 
         bw_threshold = bw_param[0]
         while best_accuracy != 1 and abs(bw_threshold - bw_param[1]) > _EPSILON:
@@ -39,7 +45,8 @@ class FruitClassifier:
                 variance_threshold = variance_param[0]
                 while best_accuracy != 1 and variance_threshold != variance_param[1]:
                     tp, fn, tn, fp = self._tp_fn_tn_fp(
-                        path, bw_threshold, radius, variance_threshold)
+                        path, bw_threshold, radius, variance_threshold
+                    )
                     current_accuracy = self._accuracy(tp, fn, tn, fp)
                     if best_accuracy < current_accuracy:
                         best_accuracy = current_accuracy
@@ -89,9 +96,11 @@ class FruitClassifier:
     def _tp_fn_tn_fp(self, path, bw_threshold, radius, variance_threshold):
         """Возвращает TruePositive, FalseNegative, TrueNegative и FalsePositive."""
         tp, fn = self._get_tp_fn_or_tn_fp(
-            path, self.fruit1_name, bw_threshold, radius, variance_threshold)
+            path, self.fruit1_name, bw_threshold, radius, variance_threshold
+        )
         tn, fp = self._get_tp_fn_or_tn_fp(
-            path, self.fruit2_name, bw_threshold, radius, variance_threshold)
+            path, self.fruit2_name, bw_threshold, radius, variance_threshold
+        )
         return tp, fn, tn, fp
 
     def _get_tp_fn_or_tn_fp(self, path, fruit_name, threshold_get_bin, radius, variance_threshold):
@@ -109,7 +118,8 @@ class FruitClassifier:
                     os.path.join(path, fruit_name, filename),
                     threshold_get_bin,
                     variance_threshold,
-                    radius=radius) == fruit_name:
+                    radius=radius,
+            ) == fruit_name:
                 tp_or_tn += 1
             else:
                 fn_or_fp += 1
@@ -190,7 +200,8 @@ class FruitClassifier:
             path: путь, по которому лежит тестовый набор данных.
         """
         tp, fn, tn, fp = self._tp_fn_tn_fp(
-            path, self.bw_threshold, self.radius, self.variance_threshold)
+            path, self.bw_threshold, self.radius, self.variance_threshold
+        )
         accuracy = self._accuracy(path, self.bw_threshold, self.radius, self.variance_threshold)
         precision = self._precision(tp, fp)
         negative_predictive_value = self._negative_predictive_value(tn, fn)
@@ -200,4 +211,5 @@ class FruitClassifier:
             f'accuracy = {accuracy:4.2%}, precision = {precision:4.2%}'
             f'negative predictive value = {negative_predictive_value:4.2%}'
             f'sensitivity = {sensitivity:4.2%}'
-            f'specificity = {specificity:4.2%}')
+            f'specificity = {specificity:4.2%}'
+        )

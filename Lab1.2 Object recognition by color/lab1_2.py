@@ -39,14 +39,22 @@ def circles_check(path):
         grayscale_image = cv2.imread(os.path.join(path, file_name), cv2.IMREAD_GRAYSCALE)
         # Тонкая настройка ручками!
         circles = cv2.HoughCircles(
-            grayscale_image, cv2.HOUGH_GRADIENT, dp=2, minDist=300,
-            param1=500, param2=100, minRadius=130, maxRadius=140)
+            grayscale_image,
+            cv2.HOUGH_GRADIENT,
+            dp=2,
+            minDist=300,
+            param1=500,
+            param2=100,
+            minRadius=130,
+            maxRadius=140,
+        )
         ax = plt.subplot()
         if circles is not None:
             for circle in circles[0]:
                 x, y, r = map(int, circle)
                 draw_circle = patches.Circle(
-                    (x, y), radius=r, color=GREEN_COLOR, linewidth=3, fill=False)
+                    (x, y), radius=r, color=GREEN_COLOR, linewidth=3, fill=False,
+                )
                 ax.imshow(image)
                 ax.add_patch(draw_circle)
         else:
@@ -79,7 +87,7 @@ def get_intermediate_accumulator(image):
         crop = hls_image[y-r:y+r, x-r:x+r, :]
         hist = cv2.calcHist(
             [crop], [CHANNEL1, CHANNEL2, CHANNEL3], MASK, [H_MAX, L_MAX, S_MAX],
-            H_RANGE + L_RANGE + S_RANGE, accumulate=False)
+            H_RANGE + L_RANGE + S_RANGE, accumulate=False,)
         intermediate_accumulator += hist
     return intermediate_accumulator
 
@@ -158,11 +166,13 @@ def test(path, train_results):
             crop = hls_image[y-r:y+r, x-r:x+r, :]
             hist = cv2.calcHist(
                 [crop], [CHANNEL1, CHANNEL2, CHANNEL3], MASK, [H_MAX, L_MAX, S_MAX],
-                H_RANGE + L_RANGE + S_RANGE, accumulate=False)
+                H_RANGE + L_RANGE + S_RANGE, accumulate=False,
+            )
             pred_label = predict(hist, train_results)
 
             draw_circle = patches.Circle(
-                (x, y), radius=r, color=GREEN_COLOR, linewidth=3, fill=False)
+                (x, y), radius=r, color=GREEN_COLOR, linewidth=3, fill=False,
+            )
             ax.imshow(rgb_image)
             ax.add_patch(draw_circle)
             ax.text(x, y, pred_label, fontsize='xx-large', backgroundcolor=WHITE_COLOR)
