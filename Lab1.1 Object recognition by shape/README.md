@@ -19,15 +19,10 @@
 использованной литературы).
 
 Фильтры (операторы):
-* Кэнни (Canny):
-https://scikit-image.org/docs/dev/api/skimage.feature.html#skimage.feature.canny
-* Превитт (Prewitt):
-https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.prewitt
-* Робертс (Roberts):
-https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.roberts
-* Собель (Sobel):
-https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.sobel
-* Щарра (Scharr):
-https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.scharr
+* [Кэнни (Canny)](https://scikit-image.org/docs/dev/api/skimage.feature.html#skimage.feature.canny)
+* [Превитт (Prewitt)](https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.prewitt)
+* [Робертс (Roberts)](https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.roberts)
+* [Собель (Sobel)](https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.sobel)
+* [Щарра (Scharr)](https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.scharr)
 
-Алгоритмы выделения контуров изображений: https://habr.com/ru/post/114452/
+[Алгоритмы выделения контуров изображений](https://habr.com/ru/post/114452/)
